@@ -1,0 +1,179 @@
+import org.openapitools.generator.gradle.plugin.tasks.GenerateTask
+
+buildscript {
+    dependencies {
+        classpath("ru.tinkoff.kora:openapi-generator:$koraVersion")
+    }
+}
+
+plugins {
+    id "java"
+    id "jacoco"
+    id "application"
+
+    id "org.openapi.generator" version "7.4.0"
+    id "org.flywaydb.flyway" version "8.4.2"
+    id "com.diffplug.spotless" version "6.19.0"
+}
+
+applicationName = "application"
+mainClassName = "ru.tinkoff.kora.java.crud.Application"
+
+group = groupId
+version = koraVersion
+
+sourceCompatibility = JavaVersion.VERSION_21
+targetCompatibility = JavaVersion.VERSION_21
+
+repositories {
+    mavenCentral()
+    maven { url "https://oss.sonatype.org/content/repositories/snapshots" }
+}
+
+configurations {
+    koraBom
+    implementation.extendsFrom(koraBom)
+    annotationProcessor.extendsFrom(koraBom)
+}
+
+dependencies {
+    koraBom platform("ru.tinkoff.kora:kora-parent:$koraVersion")
+    annotationProcessor "org.mapstruct:mapstruct-processor:1.5.5.Final"
+    annotationProcessor "ru.tinkoff.kora:annotation-processors"
+
+    implementation "ru.tinkoff.kora:http-server-undertow"
+    implementation "ru.tinkoff.kora:database-jdbc"
+    implementation "ru.tinkoff.kora:micrometer-module"
+    implementation "ru.tinkoff.kora:json-module"
+    implementation "ru.tinkoff.kora:validation-module"
+    implementation "ru.tinkoff.kora:cache-caffeine"
+    implementation "ru.tinkoff.kora:resilient-kora"
+    implementation "ru.tinkoff.kora:config-hocon"
+    implementation "ru.tinkoff.kora:openapi-management"
+    implementation "ru.tinkoff.kora:logging-logback"
+
+    implementation "org.mapstruct:mapstruct:1.5.5.Final"
+    implementation "org.postgresql:postgresql:42.7.2"
+
+    testImplementation "org.json:json:20231013"
+    testImplementation "org.skyscreamer:jsonassert:1.5.1"
+
+    testImplementation "org.mockito:mockito-core:5.6.0"
+    testImplementation "ru.tinkoff.kora:test-junit5"
+    testImplementation "io.goodforgod:testcontainers-extensions-postgres:0.11.0"
+    testImplementation "org.testcontainers:junit-jupiter:1.17.6"
+}
+
+// for snapshot dependencies
+configurations {
+    configureEach {
+        resolutionStrategy {
+            cacheChangingModulesFor 0, "seconds" // check for updates every build
+        }
+    }
+}
+
+openApiGenerate {
+    generatorName = "kora"
+    group = "openapi tools"
+    inputSpec = "$projectDir/src/main/resources/openapi/http-server.yaml"
+    outputDir = "$buildDir/generated/openapi"
+    apiPackage = "ru.tinkoff.kora.java.crud.openapi.http.server.api"
+    modelPackage = "ru.tinkoff.kora.java.crud.openapi.http.server.model"
+    invokerPackage = "ru.tinkoff.kora.java.crud.openapi.http.server.invoker"
+    configOptions = [
+            mode                  : "java-server", // так же есть java-server вариация HTTP Server"а
+            enableServerValidation: "true"
+    ]
+}
+
+compileJava.dependsOn tasks.openApiGenerate
+test.dependsOn tasks.distTar
+
+application {
+    applicationDefaultJvmArgs = ["-Dfile.encoding=UTF-8"]
+}
+
+//noinspection GroovyAssignabilityCheck
+run {
+    environment([
+            "POSTGRES_JDBC_URL": "jdbc:postgresql://$postgresHost:$postgresPort/$postgresDatabase",
+            "POSTGRES_USER"    : "$postgresUser",
+            "POSTGRES_PASS"    : "$postgresPassword",
+    ])
+}
+
+test {
+    jvmArgs += [
+            "-XX:+TieredCompilation",
+            "-XX:TieredStopAtLevel=1",
+    ]
+
+    environment([
+            "": ""
+    ])
+
+    useJUnitPlatform()
+    testLogging {
+        showStandardStreams(true)
+        events("passed", "skipped", "failed")
+        exceptionFormat("full")
+    }
+
+    jacoco {
+        excludes += ["**/Application*"]
+    }
+
+    reports {
+        html.required = false
+        junitXml.required = false
+    }
+}
+
+sourceSets {
+    main {
+        java.srcDirs += "$buildDir/generated/openapi"
+    }
+}
+
+flyway {
+    url = "jdbc:postgresql://$postgresHost:$postgresPort/$postgresDatabase"
+    user = "$postgresUser"
+    password = "$postgresPassword"
+    locations = ["classpath:db/migration"]
+}
+
+distTar {
+    archiveFileName = "application.tar"
+}
+
+compileJava {
+    options.encoding("UTF-8")
+    options.incremental(true)
+    options.fork = false
+}
+
+spotless {
+    java {
+        encoding("UTF-8")
+        importOrder()
+        removeUnusedImports()
+        eclipse("4.21").configFile("${rootDir}/config/codestyle.xml")
+        targetExclude("**/proto/**", "**/generated/openapi/**", "**/generated/soap/**", "**/generated/grpc/**",)
+    }
+}
+
+check.dependsOn jacocoTestReport
+jacocoTestReport {
+    reports {
+        xml.required = true
+        html.outputLocation = layout.buildDirectory.dir("jacocoHtml")
+    }
+}
+
+javadoc {
+    options.encoding = "UTF-8"
+    if (JavaVersion.current().isJava9Compatible()) {
+        options.addBooleanOption("html5", true)
+    }
+}
