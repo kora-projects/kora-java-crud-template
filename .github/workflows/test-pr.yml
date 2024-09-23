@@ -1,0 +1,40 @@
+name: Test PR
+
+on:
+  pull_request:
+    branches:
+      - "master"
+
+
+permissions:
+  contents: read
+  checks: write
+  pull-requests: write
+
+
+jobs:
+  build-tests:
+    runs-on: ubuntu-latest
+    name: Pull Request Java ${{ matrix.java }}
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up JDK
+        uses: actions/setup-java@v3
+        with:
+          java-version: "21"
+          distribution: "adopt"
+
+      - name: Build classes
+        run: "./gradlew classes"
+
+      - name: Build tests
+        run: "./gradlew testClasses"
+
+      - name: Run tests
+        run: "./gradlew test jacocoTestReport"
+
+      - name: Report tests
+        uses: EnricoMi/publish-unit-test-result-action@v2
+        with:
+          files: |
+            **/test-results/**/*.xml

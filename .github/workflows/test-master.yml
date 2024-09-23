@@ -1,0 +1,27 @@
+name: Build Master
+
+on:
+  push:
+    branches:
+      - "master"
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    name: Running tests
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up JDK
+        uses: actions/setup-java@v3
+        with:
+          java-version: "21"
+          distribution: "adopt"
+
+      - name: Build classes
+        run: "./gradlew classes"
+
+      - name: Build tests
+        run: "./gradlew testClasses"
+
+      - name: Run tests
+        run: "./gradlew test jacocoTestReport --no-parallel"

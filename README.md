@@ -1,3 +1,5 @@
+[![GitHub Action](https://github.com/kora-projects/kora-java-crud-template/workflows/Build%20Master/badge.svg)](https://github.com/kora-projects/kora-java-crud-template/actions?query=workflow%3A%22Build%20Master%22++)
+
 # Шаблон приложения Kora Java CRUD
 
 Пример сервиса реализованного на Kora с HTTP [CRUD](https://github.com/swagger-api/swagger-petstore) API, 
