@@ -3,11 +3,11 @@ package ru.tinkoff.kora.java.crud.controller;
 import ru.tinkoff.kora.common.Component;
 import ru.tinkoff.kora.java.crud.model.mapper.PetMapper;
 import ru.tinkoff.kora.java.crud.openapi.http.server.api.PetApiDelegate;
-import ru.tinkoff.kora.java.crud.service.PetService;
 import ru.tinkoff.kora.java.crud.openapi.http.server.api.PetApiResponses;
 import ru.tinkoff.kora.java.crud.openapi.http.server.model.MessageTO;
 import ru.tinkoff.kora.java.crud.openapi.http.server.model.PetCreateTO;
 import ru.tinkoff.kora.java.crud.openapi.http.server.model.PetUpdateTO;
+import ru.tinkoff.kora.java.crud.service.PetService;
 
 @Component
 public final class PetDelegate implements PetApiDelegate {
@@ -64,7 +64,8 @@ public final class PetDelegate implements PetApiDelegate {
         }
 
         if (petService.delete(petId)) {
-            return new PetApiResponses.DeletePetApiResponse.DeletePet200ApiResponse(new MessageTO("Successfully deleted pet with ID: " + petId));
+            return new PetApiResponses.DeletePetApiResponse.DeletePet200ApiResponse(
+                    new MessageTO("Successfully deleted pet with ID: " + petId));
         } else {
             return new PetApiResponses.DeletePetApiResponse.DeletePet404ApiResponse(notFound(petId));
         }

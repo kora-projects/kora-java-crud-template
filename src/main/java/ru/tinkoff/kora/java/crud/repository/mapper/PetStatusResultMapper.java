@@ -1,11 +1,10 @@
 package ru.tinkoff.kora.java.crud.repository.mapper;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import ru.tinkoff.kora.common.Component;
 import ru.tinkoff.kora.database.jdbc.mapper.result.JdbcResultColumnMapper;
 import ru.tinkoff.kora.java.crud.model.dao.Pet;
-
-import java.sql.ResultSet;
-import java.sql.SQLException;
 
 @Component
 public final class PetStatusResultMapper implements JdbcResultColumnMapper<Pet.Status> {

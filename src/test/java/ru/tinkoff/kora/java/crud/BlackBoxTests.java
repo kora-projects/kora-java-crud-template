@@ -1,25 +1,24 @@
 package ru.tinkoff.kora.java.crud;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import io.goodforgod.testcontainers.extensions.ContainerMode;
 import io.goodforgod.testcontainers.extensions.Network;
 import io.goodforgod.testcontainers.extensions.jdbc.ConnectionPostgreSQL;
 import io.goodforgod.testcontainers.extensions.jdbc.JdbcConnection;
 import io.goodforgod.testcontainers.extensions.jdbc.Migration;
 import io.goodforgod.testcontainers.extensions.jdbc.TestcontainersPostgreSQL;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.time.Duration;
+import java.util.Map;
 import org.json.JSONObject;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
 import org.skyscreamer.jsonassert.JSONCompareMode;
-
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
-import java.time.Duration;
-import java.util.Map;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 @TestcontainersPostgreSQL(
         network = @Network(shared = true),
@@ -28,7 +27,7 @@ import static org.junit.jupiter.api.Assertions.*;
                 engine = Migration.Engines.FLYWAY,
                 apply = Migration.Mode.PER_METHOD,
                 drop = Migration.Mode.PER_METHOD))
-class PetControllerTests {
+class BlackBoxTests {
 
     private static final AppContainer container = AppContainer.build()
             .withNetwork(org.testcontainers.containers.Network.SHARED);
@@ -74,14 +73,11 @@ class PetControllerTests {
 
         // then
         connection.assertCountsEquals(1, "pets");
-        connection.assertCountsEquals(1, "categories");
         var responseBody = new JSONObject(response.body());
         assertNotNull(responseBody.query("/id"));
         assertNotEquals(0L, responseBody.query("/id"));
         assertNotNull(responseBody.query("/status"));
         assertEquals(requestBody.query("/name"), responseBody.query("/name"));
-        assertNotNull(responseBody.query("/category/id"));
-        assertEquals(requestBody.query("/category/name"), responseBody.query("/category/name"));
     }
 
     @Test
@@ -89,9 +85,7 @@ class PetControllerTests {
         // given
         var httpClient = HttpClient.newHttpClient();
         var createRequestBody = new JSONObject()
-                .put("name", "doggie")
-                .put("category", new JSONObject()
-                        .put("name", "Dogs"));
+                .put("name", "doggie");
 
         // when
         var createRequest = HttpRequest.newBuilder()
@@ -103,7 +97,6 @@ class PetControllerTests {
         var createResponse = httpClient.send(createRequest, HttpResponse.BodyHandlers.ofString());
         assertEquals(200, createResponse.statusCode(), createResponse.body());
         connection.assertCountsEquals(1, "pets");
-        connection.assertCountsEquals(1, "categories");
         var createResponseBody = new JSONObject(createResponse.body());
 
         // then
@@ -125,9 +118,7 @@ class PetControllerTests {
         // given
         var httpClient = HttpClient.newHttpClient();
         var createRequestBody = new JSONObject()
-                .put("name", "doggie")
-                .put("category", new JSONObject()
-                        .put("name", "Dogs"));
+                .put("name", "doggie");
 
         var createRequest = HttpRequest.newBuilder()
                 .POST(HttpRequest.BodyPublishers.ofString(createRequestBody.toString()))
@@ -138,15 +129,12 @@ class PetControllerTests {
         var createResponse = httpClient.send(createRequest, HttpResponse.BodyHandlers.ofString());
         assertEquals(200, createResponse.statusCode(), createResponse.body());
         connection.assertCountsEquals(1, "pets");
-        connection.assertCountsEquals(1, "categories");
         var createResponseBody = new JSONObject(createResponse.body());
 
         // when
         var updateRequestBody = new JSONObject()
                 .put("name", "doggie2")
-                .put("status", "pending")
-                .put("category", new JSONObject()
-                        .put("name", "Dogs2"));
+                .put("status", "pending");
 
         var updateRequest = HttpRequest.newBuilder()
                 .PUT(HttpRequest.BodyPublishers.ofString(updateRequestBody.toString()))
@@ -177,9 +165,7 @@ class PetControllerTests {
         // given
         var httpClient = HttpClient.newHttpClient();
         var createRequestBody = new JSONObject()
-                .put("name", "doggie")
-                .put("category", new JSONObject()
-                        .put("name", "Dogs"));
+                .put("name", "doggie");
 
         var createRequest = HttpRequest.newBuilder()
                 .POST(HttpRequest.BodyPublishers.ofString(createRequestBody.toString()))
@@ -190,7 +176,6 @@ class PetControllerTests {
         var createResponse = httpClient.send(createRequest, HttpResponse.BodyHandlers.ofString());
         assertEquals(200, createResponse.statusCode(), createResponse.body());
         connection.assertCountsEquals(1, "pets");
-        connection.assertCountsEquals(1, "categories");
         var createResponseBody = new JSONObject(createResponse.body());
 
         // when

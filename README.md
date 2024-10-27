@@ -2,10 +2,11 @@
 
 # Шаблон приложения Kora Java CRUD
 
-Пример сервиса реализованного на Kora с HTTP [CRUD](https://github.com/swagger-api/swagger-petstore) API, 
-в качестве базы данных выступает Postgres, используется кэш Caffeine, а также другие модули которые использовались бы в реальном приложении в бою.
+Шаблон для быстрого старта нового проекта на Java и Kora с базовым настроенным HTTP [CRUD](https://github.com/swagger-api/swagger-petstore) API для одной сущности.
+В качестве базы данных выступает Postgres, используется кэш Caffeine, 
+а также другие модули которые использовались бы в реальном приложении в бою.
 
-В примере использовались модули:
+В шаблоне используются модули:
 - [HTTP сервер](https://kora-projects.github.io/kora-docs/ru/documentation/http-server/)
 - [OpenAPI HTTP серверная генерация](https://kora-projects.github.io/kora-docs/ru/documentation/openapi-codegen/)
 - [Пробы](https://kora-projects.github.io/kora-docs/ru/documentation/probes/)
@@ -31,11 +32,25 @@
 ./gradlew openApiGenerateHttpServer
 ```
 
+### Image
+
+Собрать образ приложения:
+```shell
+docker build -t kora-java-crud .
+```
+
 ## Run
 
 Запустить локально:
 ```shell
 ./gradlew run
+```
+
+## Migration
+
+Миграции вызываются с помощью Flyway Gradle Plugin:
+```shell
+./gradlew flywayMigrate
 ```
 
 ## Test

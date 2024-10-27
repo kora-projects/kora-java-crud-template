@@ -233,27 +233,6 @@ components:
       properties:
         message:
           type: string
-    CategoryTO:
-      required:
-        - id
-        - name
-      type: object
-      properties:
-        id:
-          type: integer
-          format: int64
-          example: 1
-        name:
-          type: string
-          example: Dogs
-    CategoryCreateTO:
-      required:
-        - name
-      type: object
-      properties:
-        name:
-          type: string
-          example: Dogs
     PetStatusTO:
       properties:
         status:
@@ -282,8 +261,6 @@ components:
               nullable: false
               minLength: 1
               maxLength: 50
-            category:
-              $ref: '#/components/schemas/CategoryTO'
     PetCreateTO:
       required:
         - name
@@ -296,8 +273,6 @@ components:
           nullable: false
           minLength: 1
           maxLength: 50
-        category:
-          $ref: '#/components/schemas/CategoryCreateTO'
     PetUpdateTO:
       allOf:
         - $ref: '#/components/schemas/PetStatusTO'
@@ -311,5 +286,3 @@ components:
               nullable: false
               minLength: 1
               maxLength: 50
-            category:
-              $ref: '#/components/schemas/CategoryCreateTO'
