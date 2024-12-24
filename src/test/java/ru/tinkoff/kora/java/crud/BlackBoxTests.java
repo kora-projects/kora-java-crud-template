@@ -42,7 +42,8 @@ class BlackBoxTests {
                 "POSTGRES_JDBC_URL", params.jdbcUrl(),
                 "POSTGRES_USER", params.username(),
                 "POSTGRES_PASS", params.password(),
-                "CACHE_EXPIRE_WRITE", "0s"));
+                "CACHE_MAX_SIZE", "0",
+                "RETRY_ATTEMPTS", "0"));
 
         container.start();
     }
@@ -111,6 +112,23 @@ class BlackBoxTests {
 
         var getResponseBody = new JSONObject(getResponse.body());
         JSONAssert.assertEquals(createResponseBody.toString(), getResponseBody.toString(), JSONCompareMode.LENIENT);
+    }
+
+    @Test
+    void getPetNotFound() throws Exception {
+        // given
+        var httpClient = HttpClient.newHttpClient();
+
+        // when
+        var getRequest = HttpRequest.newBuilder()
+                .GET()
+                .uri(container.getURI().resolve("/v3/pets/1"))
+                .timeout(Duration.ofSeconds(5))
+                .build();
+
+        // then
+        var getResponse = httpClient.send(getRequest, HttpResponse.BodyHandlers.ofString());
+        assertEquals(404, getResponse.statusCode(), getResponse.body());
     }
 
     @Test

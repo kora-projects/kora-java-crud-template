@@ -19,6 +19,12 @@
 
 ## Build
 
+Собрать классы:
+
+```shell
+./gradlew classes
+```
+
 Собрать артефакт:
 
 ```shell

@@ -1,6 +1,5 @@
 package ru.tinkoff.kora.java.crud.service;
 
-import java.util.Optional;
 import ru.tinkoff.kora.cache.annotation.CacheInvalidate;
 import ru.tinkoff.kora.cache.annotation.CachePut;
 import ru.tinkoff.kora.cache.annotation.Cacheable;
@@ -12,6 +11,8 @@ import ru.tinkoff.kora.java.crud.repository.PetRepository;
 import ru.tinkoff.kora.resilient.circuitbreaker.annotation.CircuitBreaker;
 import ru.tinkoff.kora.resilient.retry.annotation.Retry;
 import ru.tinkoff.kora.resilient.timeout.annotation.Timeout;
+
+import java.util.Optional;
 
 @Component
 public class PetService {
@@ -47,14 +48,17 @@ public class PetService {
             return Optional.empty();
         }
 
-        if (existing.get().name().equals(updateTO.name()) && existing.get().status().equals(updateTO.status())) {
+        final Pet pet = existing.get();
+        if (pet.name().equals(updateTO.name())
+            && updateTO.status() != null
+            && pet.status().equals(toStatus(updateTO.status()))) {
             return existing;
         }
 
         var status = (updateTO.status() == null)
-                ? existing.get().status()
+                ? pet.status()
                 : toStatus(updateTO.status());
-        var result = new Pet(existing.get().id(), updateTO.name(), status);
+        var result = new Pet(pet.id(), updateTO.name(), status);
         petRepository.update(result);
         return Optional.of(result);
     }
