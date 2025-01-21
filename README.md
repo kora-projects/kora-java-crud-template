@@ -42,21 +42,32 @@
 
 Собрать образ приложения:
 ```shell
-docker build -t kora-java-crud .
+docker build -t kora-java-crud-template .
+```
+
+## Migration
+
+Накатить миграции
+```shell
+./gradlew flywayMigrate
 ```
 
 ## Run
+
+Перед запуском локально требуется запустить базу Postgres и накатить миграции.
 
 Запустить локально:
 ```shell
 ./gradlew run
 ```
 
-## Migration
+## Run Docker-Compose
 
-Миграции вызываются с помощью Flyway Gradle Plugin:
+Требуется сначала собрать артефакт.
+
+Запустить как docker-compose:
 ```shell
-./gradlew flywayMigrate
+docker-compose up
 ```
 
 ## Test
