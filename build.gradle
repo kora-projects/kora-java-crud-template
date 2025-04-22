@@ -19,6 +19,12 @@ plugins {
 group = groupId
 version = koraVersion
 
+application {
+    applicationName = "application"
+    mainClassName = "ru.tinkoff.kora.java.crud.Application"
+    applicationDefaultJvmArgs = ["-Dfile.encoding=UTF-8"]
+}
+
 sourceCompatibility = JavaVersion.VERSION_21
 targetCompatibility = JavaVersion.VERSION_21
 
@@ -78,12 +84,6 @@ def openApiGeneratePetV3 = tasks.register("openApiGenerateHttpServer", GenerateT
 }
 sourceSets.main { java.srcDirs += openApiGeneratePetV3.get().outputDir }
 compileJava.dependsOn openApiGeneratePetV3
-
-application {
-    applicationName = "application"
-    mainClassName = "ru.tinkoff.kora.java.crud.Application"
-    applicationDefaultJvmArgs = ["-Dfile.encoding=UTF-8"]
-}
 
 //noinspection GroovyAssignabilityCheck
 run {
