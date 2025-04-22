@@ -71,7 +71,7 @@ dependencies {
 def openApiGeneratePetV3 = tasks.register("openApiGenerateHttpServer", GenerateTask) {
     generatorName = "kora"
     group = "openapi tools"
-    inputSpec = "$projectDir/src/main/resources/openapi/petstoreV3.yaml"
+    inputSpec = "$projectDir/src/main/resources/openapi/http-server.yaml"
     outputDir = "$buildDir/generated/openapi"
     def corePackage = "ru.tinkoff.kora.java.crud.openapi.http.server"
     apiPackage = "${corePackage}.api"
