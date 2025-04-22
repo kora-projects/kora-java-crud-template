@@ -19,6 +19,12 @@ plugins {
 group = groupId
 version = koraVersion
 
+application {
+    applicationName = "application"
+    mainClassName = "ru.tinkoff.kora.java.crud.Application"
+    applicationDefaultJvmArgs = ["-Dfile.encoding=UTF-8"]
+}
+
 sourceCompatibility = JavaVersion.VERSION_21
 targetCompatibility = JavaVersion.VERSION_21
 
@@ -58,19 +64,26 @@ dependencies {
 
     testImplementation "org.mockito:mockito-core:5.7.0"
     testImplementation "ru.tinkoff.kora:test-junit5"
-    testImplementation "io.goodforgod:testcontainers-extensions-postgres:0.12.0"
+    testImplementation "io.goodforgod:testcontainers-extensions-postgres:0.12.2"
     testImplementation "org.testcontainers:junit-jupiter:1.19.8"
 }
 
-application {
-    applicationName = "application"
-    mainClassName = "ru.tinkoff.kora.java.crud.Application"
-    applicationDefaultJvmArgs = ["-Dfile.encoding=UTF-8"]
+def openApiGeneratePetV3 = tasks.register("openApiGenerateHttpServer", GenerateTask) {
+    generatorName = "kora"
+    group = "openapi tools"
+    inputSpec = "$projectDir/src/main/resources/openapi/http-server.yaml"
+    outputDir = "$buildDir/generated/openapi"
+    def corePackage = "ru.tinkoff.kora.java.crud.openapi.http.server"
+    apiPackage = "${corePackage}.api"
+    modelPackage = "${corePackage}.model"
+    invokerPackage = "${corePackage}.invoker"
+    configOptions = [
+            mode                  : "java-server",
+            enableServerValidation: "true",
+    ]
 }
-
-distTar {
-    archiveFileName = "application.tar"
-}
+sourceSets.main { java.srcDirs += openApiGeneratePetV3.get().outputDir }
+compileJava.dependsOn openApiGeneratePetV3
 
 //noinspection GroovyAssignabilityCheck
 run {
@@ -81,28 +94,13 @@ run {
     ])
 }
 
-tasks.register("openApiGenerateHttpServer", GenerateTask) {
-    generatorName = "kora"
-    group = "openapi tools"
-    inputSpec = "$projectDir/src/main/resources/openapi/http-server.yaml"
-    outputDir = "$buildDir/generated/openapi"
-    apiPackage = "ru.tinkoff.kora.java.crud.openapi.http.server.api"
-    modelPackage = "ru.tinkoff.kora.java.crud.openapi.http.server.model"
-    invokerPackage = "ru.tinkoff.kora.java.crud.openapi.http.server.invoker"
-    configOptions = [
-            mode                  : "java-server", // так же есть java-server вариация HTTP Server"а
-            enableServerValidation: "true"
-    ]
+distTar {
+    archiveFileName = "application.tar"
 }
-
-sourceSets.main {
-    java.srcDirs += "$buildDir/generated/openapi"
-}
-
-compileJava.dependsOn tasks.openApiGenerateHttpServer
-test.dependsOn tasks.distTar
 
 test {
+    dependsOn tasks.distTar
+
     jvmArgs += [
             "-XX:+TieredCompilation",
             "-XX:TieredStopAtLevel=1",
