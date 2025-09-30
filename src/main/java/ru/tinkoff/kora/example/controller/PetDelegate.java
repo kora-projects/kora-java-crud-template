@@ -1,13 +1,13 @@
-package ru.tinkoff.kora.java.crud.controller;
+package ru.tinkoff.kora.example.controller;
 
 import ru.tinkoff.kora.common.Component;
-import ru.tinkoff.kora.java.crud.model.mapper.PetMapper;
-import ru.tinkoff.kora.java.crud.openapi.http.server.api.PetApiDelegate;
-import ru.tinkoff.kora.java.crud.openapi.http.server.api.PetApiResponses;
-import ru.tinkoff.kora.java.crud.openapi.http.server.model.MessageTO;
-import ru.tinkoff.kora.java.crud.openapi.http.server.model.PetCreateTO;
-import ru.tinkoff.kora.java.crud.openapi.http.server.model.PetUpdateTO;
-import ru.tinkoff.kora.java.crud.service.PetService;
+import ru.tinkoff.kora.example.model.mapper.PetMapper;
+import ru.tinkoff.kora.example.openapi.http.server.api.PetApiDelegate;
+import ru.tinkoff.kora.example.openapi.http.server.api.PetApiResponses;
+import ru.tinkoff.kora.example.openapi.http.server.model.MessageTO;
+import ru.tinkoff.kora.example.openapi.http.server.model.PetCreateTO;
+import ru.tinkoff.kora.example.openapi.http.server.model.PetUpdateTO;
+import ru.tinkoff.kora.example.service.PetService;
 
 @Component
 public final class PetDelegate implements PetApiDelegate {
@@ -22,10 +22,6 @@ public final class PetDelegate implements PetApiDelegate {
 
     @Override
     public PetApiResponses.GetPetByIdApiResponse getPetById(long petId) {
-        if (petId < 0) {
-            return new PetApiResponses.GetPetByIdApiResponse.GetPetById400ApiResponse(malformedId(petId));
-        }
-
         var pet = petService.findByID(petId);
         if (pet.isPresent()) {
             var body = petMapper.asDTO(pet.get());
@@ -44,10 +40,6 @@ public final class PetDelegate implements PetApiDelegate {
 
     @Override
     public PetApiResponses.UpdatePetApiResponse updatePet(long petId, PetUpdateTO petUpdateTO) {
-        if (petId < 0) {
-            return new PetApiResponses.UpdatePetApiResponse.UpdatePet400ApiResponse(malformedId(petId));
-        }
-
         var updated = petService.update(petId, petUpdateTO);
         if (updated.isPresent()) {
             var body = petMapper.asDTO(updated.get());
@@ -59,10 +51,6 @@ public final class PetDelegate implements PetApiDelegate {
 
     @Override
     public PetApiResponses.DeletePetApiResponse deletePet(long petId) {
-        if (petId < 0) {
-            return new PetApiResponses.DeletePetApiResponse.DeletePet400ApiResponse(malformedId(petId));
-        }
-
         if (petService.delete(petId)) {
             return new PetApiResponses.DeletePetApiResponse.DeletePet200ApiResponse(
                     new MessageTO("Successfully deleted pet with ID: " + petId));
@@ -73,9 +61,5 @@ public final class PetDelegate implements PetApiDelegate {
 
     private static MessageTO notFound(long petId) {
         return new MessageTO("Pet not found for ID: " + petId);
-    }
-
-    private static MessageTO malformedId(long petId) {
-        return new MessageTO("Pet malformed ID: " + petId);
     }
 }

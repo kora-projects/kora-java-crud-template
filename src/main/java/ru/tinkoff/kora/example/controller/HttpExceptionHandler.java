@@ -1,18 +1,17 @@
-package ru.tinkoff.kora.java.crud.controller;
+package ru.tinkoff.kora.example.controller;
 
 import io.micrometer.core.instrument.config.validate.ValidationException;
+import java.util.concurrent.CompletionStage;
+import java.util.concurrent.TimeoutException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.tinkoff.kora.common.Component;
 import ru.tinkoff.kora.common.Context;
 import ru.tinkoff.kora.common.Tag;
+import ru.tinkoff.kora.example.openapi.http.server.model.MessageTO;
 import ru.tinkoff.kora.http.common.body.HttpBody;
 import ru.tinkoff.kora.http.server.common.*;
-import ru.tinkoff.kora.java.crud.openapi.http.server.model.MessageTO;
 import ru.tinkoff.kora.json.common.JsonWriter;
-
-import java.util.concurrent.CompletionStage;
-import java.util.concurrent.TimeoutException;
 
 @Tag(HttpServerModule.class)
 @Component

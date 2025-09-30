@@ -131,6 +131,8 @@ paths:
           schema:
             type: integer
             format: int64
+            nullable: false
+            minimum: 1
       requestBody:
         description: Update an existent pet in the store
         content:
@@ -189,6 +191,8 @@ paths:
           schema:
             type: integer
             format: int64
+            nullable: false
+            minimum: 1
       responses:
         '200':
           description: successful operation

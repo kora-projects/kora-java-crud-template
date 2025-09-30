@@ -1,4 +1,4 @@
-package ru.tinkoff.kora.java.crud;
+package ru.tinkoff.kora.example;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
@@ -9,18 +9,18 @@ import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import ru.tinkoff.kora.java.crud.openapi.http.server.model.PetCreateTO;
-import ru.tinkoff.kora.java.crud.openapi.http.server.model.PetUpdateTO;
-import ru.tinkoff.kora.java.crud.repository.PetRepository;
-import ru.tinkoff.kora.java.crud.service.PetCache;
-import ru.tinkoff.kora.java.crud.service.PetService;
+import ru.tinkoff.kora.example.openapi.http.server.model.PetCreateTO;
+import ru.tinkoff.kora.example.openapi.http.server.model.PetUpdateTO;
+import ru.tinkoff.kora.example.repository.PetRepository;
+import ru.tinkoff.kora.example.service.PetCache;
+import ru.tinkoff.kora.example.service.PetService;
 import ru.tinkoff.kora.test.extension.junit5.KoraAppTest;
 import ru.tinkoff.kora.test.extension.junit5.KoraAppTestConfigModifier;
 import ru.tinkoff.kora.test.extension.junit5.KoraConfigModification;
 import ru.tinkoff.kora.test.extension.junit5.TestComponent;
 
 @KoraAppTest(Application.class)
-class UnitTests implements KoraAppTestConfigModifier {
+class ComponentTests implements KoraAppTestConfigModifier {
 
     @Mock
     @TestComponent
