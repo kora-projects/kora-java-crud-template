@@ -1,4 +1,4 @@
-package ru.tinkoff.kora.java.crud;
+package ru.tinkoff.kora.example;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -43,7 +43,9 @@ class BlackBoxTests {
                 "POSTGRES_USER", params.username(),
                 "POSTGRES_PASS", params.password(),
                 "CACHE_MAX_SIZE", "0",
-                "RETRY_ATTEMPTS", "0"));
+                "RETRY_ATTEMPTS", "0",
+                "LOGGING_LEVEL_KORA", "DEBUG",
+                "LOGGING_LEVEL_APP", "DEBUG"));
 
         container.start();
     }

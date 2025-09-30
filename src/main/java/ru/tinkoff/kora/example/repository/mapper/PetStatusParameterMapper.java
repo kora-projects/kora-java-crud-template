@@ -1,11 +1,11 @@
-package ru.tinkoff.kora.java.crud.repository.mapper;
+package ru.tinkoff.kora.example.repository.mapper;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Types;
 import ru.tinkoff.kora.common.Component;
 import ru.tinkoff.kora.database.jdbc.mapper.parameter.JdbcParameterColumnMapper;
-import ru.tinkoff.kora.java.crud.model.dao.Pet;
+import ru.tinkoff.kora.example.model.dao.Pet;
 
 @Component
 public final class PetStatusParameterMapper implements JdbcParameterColumnMapper<Pet.Status> {

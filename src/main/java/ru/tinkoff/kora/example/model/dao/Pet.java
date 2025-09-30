@@ -1,4 +1,4 @@
-package ru.tinkoff.kora.java.crud.model.dao;
+package ru.tinkoff.kora.example.model.dao;
 
 import ru.tinkoff.kora.database.common.annotation.Column;
 import ru.tinkoff.kora.database.common.annotation.Id;

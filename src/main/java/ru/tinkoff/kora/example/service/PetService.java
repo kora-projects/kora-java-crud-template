@@ -1,18 +1,17 @@
-package ru.tinkoff.kora.java.crud.service;
+package ru.tinkoff.kora.example.service;
 
+import java.util.Optional;
 import ru.tinkoff.kora.cache.annotation.CacheInvalidate;
 import ru.tinkoff.kora.cache.annotation.CachePut;
 import ru.tinkoff.kora.cache.annotation.Cacheable;
 import ru.tinkoff.kora.common.Component;
-import ru.tinkoff.kora.java.crud.model.dao.Pet;
-import ru.tinkoff.kora.java.crud.openapi.http.server.model.PetCreateTO;
-import ru.tinkoff.kora.java.crud.openapi.http.server.model.PetUpdateTO;
-import ru.tinkoff.kora.java.crud.repository.PetRepository;
+import ru.tinkoff.kora.example.model.dao.Pet;
+import ru.tinkoff.kora.example.openapi.http.server.model.PetCreateTO;
+import ru.tinkoff.kora.example.openapi.http.server.model.PetUpdateTO;
+import ru.tinkoff.kora.example.repository.PetRepository;
 import ru.tinkoff.kora.resilient.circuitbreaker.annotation.CircuitBreaker;
 import ru.tinkoff.kora.resilient.retry.annotation.Retry;
 import ru.tinkoff.kora.resilient.timeout.annotation.Timeout;
-
-import java.util.Optional;
 
 @Component
 public class PetService {
@@ -50,8 +49,8 @@ public class PetService {
 
         final Pet pet = existing.get();
         if (pet.name().equals(updateTO.name())
-            && updateTO.status() != null
-            && pet.status().equals(toStatus(updateTO.status()))) {
+                && updateTO.status() != null
+                && pet.status().equals(toStatus(updateTO.status()))) {
             return existing;
         }
 

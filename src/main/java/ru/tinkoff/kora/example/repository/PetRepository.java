@@ -1,4 +1,4 @@
-package ru.tinkoff.kora.java.crud.repository;
+package ru.tinkoff.kora.example.repository;
 
 import java.util.Optional;
 import ru.tinkoff.kora.database.common.UpdateCount;
@@ -6,7 +6,7 @@ import ru.tinkoff.kora.database.common.annotation.Id;
 import ru.tinkoff.kora.database.common.annotation.Query;
 import ru.tinkoff.kora.database.common.annotation.Repository;
 import ru.tinkoff.kora.database.jdbc.JdbcRepository;
-import ru.tinkoff.kora.java.crud.model.dao.Pet;
+import ru.tinkoff.kora.example.model.dao.Pet;
 
 @Repository
 public interface PetRepository extends JdbcRepository {

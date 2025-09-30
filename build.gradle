@@ -19,14 +19,10 @@ plugins {
 group = groupId
 version = koraVersion
 
-application {
-    applicationName = "application"
-    mainClassName = "ru.tinkoff.kora.java.crud.Application"
-    applicationDefaultJvmArgs = ["-Dfile.encoding=UTF-8"]
+java {
+    sourceCompatibility = JavaVersion.VERSION_21
+    targetCompatibility = JavaVersion.VERSION_21
 }
-
-sourceCompatibility = JavaVersion.VERSION_21
-targetCompatibility = JavaVersion.VERSION_21
 
 repositories {
     mavenCentral()
@@ -69,12 +65,27 @@ dependencies {
     testImplementation "org.testcontainers:junit-jupiter:1.19.8"
 }
 
+application {
+    applicationName = "application"
+    mainClass = "ru.tinkoff.kora.example.Application"
+    applicationDefaultJvmArgs = ["-Dfile.encoding=UTF-8"]
+}
+
+//noinspection GroovyAssignabilityCheck
+run {
+    environment([
+            "POSTGRES_JDBC_URL": "jdbc:postgresql://$postgresHost:$postgresPort/$postgresDatabase",
+            "POSTGRES_USER"    : "$postgresUser",
+            "POSTGRES_PASS"    : "$postgresPassword",
+    ])
+}
+
 def openApiGeneratePetV3 = tasks.register("openApiGenerateHttpServer", GenerateTask) {
     generatorName = "kora"
     group = "openapi tools"
     inputSpec = "$projectDir/src/main/resources/openapi/http-server.yaml"
     outputDir = "$buildDir/generated/openapi"
-    def corePackage = "ru.tinkoff.kora.java.crud.openapi.http.server"
+    def corePackage = "ru.tinkoff.kora.example.openapi.http.server"
     apiPackage = "${corePackage}.api"
     modelPackage = "${corePackage}.model"
     invokerPackage = "${corePackage}.invoker"
@@ -85,15 +96,6 @@ def openApiGeneratePetV3 = tasks.register("openApiGenerateHttpServer", GenerateT
 }
 sourceSets.main { java.srcDirs += openApiGeneratePetV3.get().outputDir }
 compileJava.dependsOn openApiGeneratePetV3
-
-//noinspection GroovyAssignabilityCheck
-run {
-    environment([
-            "POSTGRES_JDBC_URL": "jdbc:postgresql://$postgresHost:$postgresPort/$postgresDatabase",
-            "POSTGRES_USER"    : "$postgresUser",
-            "POSTGRES_PASS"    : "$postgresPassword",
-    ])
-}
 
 distTar {
     archiveFileName = "application.tar"
@@ -118,21 +120,15 @@ test {
         exceptionFormat("full")
     }
 
+    exclude("**/\$*")
+
     jacoco {
-        excludes += ["**/Application*"]
+        excludes += ["**/generated/**", "**/Application*", "**/\$*"]
     }
 
     reports {
         html.required = false
         junitXml.required = false
-    }
-}
-
-check.dependsOn jacocoTestReport
-jacocoTestReport {
-    reports {
-        xml.required = true
-        html.outputLocation = layout.buildDirectory.dir("jacocoHtml")
     }
 }
 
@@ -147,6 +143,15 @@ compileJava {
     options.encoding("UTF-8")
     options.incremental(true)
     options.fork = false
+}
+
+check.dependsOn jacocoTestReport
+jacocoTestReport {
+    reports {
+        xml.required = true
+        html.outputLocation = layout.buildDirectory.dir("jacocoHtml")
+    }
+    classDirectories = files(classDirectories.files.collect { fileTree(dir: it, excludes: test.jacoco.excludes) })
 }
 
 javadoc {
